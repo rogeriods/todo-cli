@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"strings"
@@ -29,7 +28,7 @@ func init() {
 func loadTasks() (TodoList, error) {
 	var todoList TodoList
 
-	data, err := ioutil.ReadFile(todoFile)
+	data, err := os.ReadFile(todoFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return todoList, nil
@@ -47,7 +46,7 @@ func saveTasks(todoList TodoList) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(todoFile, data, 0643)
+	return os.WriteFile(todoFile, data, 0643)
 }
 
 func addTask(name string) {
