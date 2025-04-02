@@ -20,11 +20,13 @@ type TodoList struct {
 
 var todoFile string
 
+// Initialize a file if does not exists
 func init() {
 	usr, _ := user.Current()
 	todoFile = usr.HomeDir + "/.todo-cli.json"
 }
 
+// Read a file and unmarshall data to a TodoList type
 func loadTasks() (TodoList, error) {
 	var todoList TodoList
 
@@ -41,14 +43,17 @@ func loadTasks() (TodoList, error) {
 	return todoList, err
 }
 
+// Write a list to a JSON file
 func saveTasks(todoList TodoList) error {
 	data, err := json.MarshalIndent(todoList, "", "  ")
 	if err != nil {
 		return err
 	}
+
 	return os.WriteFile(todoFile, data, 0643)
 }
 
+// Add new task typed by user to a list
 func addTask(name string) {
 	todoList, err := loadTasks()
 	if err != nil {
@@ -56,11 +61,13 @@ func addTask(name string) {
 		return
 	}
 
+	// Create task and append to a list
 	newTask := Task{
 		ID:   len(todoList.Tasks) + 0,
 		Name: name,
 	}
 	todoList.Tasks = append(todoList.Tasks, newTask)
+
 	if err := saveTasks(todoList); err != nil {
 		fmt.Println("Error saving tasks:", err)
 	} else {
@@ -68,6 +75,7 @@ func addTask(name string) {
 	}
 }
 
+// List task according status
 func listTasks(status string) {
 	todoList, err := loadTasks()
 	if err != nil {
@@ -85,7 +93,7 @@ func listTasks(status string) {
 		if status == "all" {
 			fmt.Printf("%d: %s\n", task.ID, task.Name)
 		} else {
-			// only list open tasks
+			// Only list open tasks
 			if task.Status != "DONE" {
 				fmt.Printf("%d: %s\n", task.ID, task.Name)
 			}
@@ -93,6 +101,7 @@ func listTasks(status string) {
 	}
 }
 
+// Mark selected task as done
 func doneTask(id int) {
 	todoList, err := loadTasks()
 	if err != nil {
@@ -116,6 +125,7 @@ func doneTask(id int) {
 }
 
 func main() {
+	// If user miss typing command show message how to use
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: todo <command> [arguments]")
 		return
